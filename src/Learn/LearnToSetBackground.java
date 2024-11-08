@@ -1,8 +1,8 @@
-package FrameWork;
+package Learn;
 
 import javax.swing.*;
 
-import FrameWork.FrameWork.Label;
+import FrameWork.*;
 
 import java.awt.*;
 import java.io.File;
@@ -32,7 +32,8 @@ public class LearnToSetBackground extends JFrame {
         ImagePanel imagePanel = new ImagePanel(image);
         this.setContentPane(imagePanel);// 将背景面板作为窗口的内容面板
         imagePanel.setOpaque(false);
-     // 设置窗口的布局为 BorderLayout
+        
+        // 设置布局管理器		
         this.setLayout(new BorderLayout());
         
         Label jlb = new Label("TEST");
@@ -65,8 +66,6 @@ public class LearnToSetBackground extends JFrame {
 				super(text);setBackground(new Color(0, 0, 0, 0));
 				this.setFont(new Font("Serif", Font.ITALIC, 36)); // 设置字体为Serif，大小24，粗体
 		        this.setForeground(Color.RED); // 设置文字颜色为红色
-		        //this.setHorizontalAlignment(SwingConstants.LEFT); // 设置文字水平左对齐
-		        //this.setVerticalAlignment(SwingConstants.TOP); // 设置文字垂直居顶
 		        this.setOpaque(false);
 			}
 		}
