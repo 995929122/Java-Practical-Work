@@ -52,6 +52,14 @@ class ImagePanel extends JPanel {
 	}
 }
 
+class Button4Clicked implements ActionListener{
+	@Override
+    public void actionPerformed(ActionEvent e) {
+        // 点击 Exit 按钮时退出程序
+        System.exit(0); // 退出程序
+    }
+}
+
 public class FrameWork extends JFrame{
 
 	private JPanel jpl=new JPanel();//主面板
@@ -60,7 +68,7 @@ public class FrameWork extends JFrame{
 	
 	private Image image;
 	
-	public  FrameWork(String imagePath) {	//构造函数					////////////
+	public  FrameWork(String imagePath) {	//构造函数					
 		//主界面基础框架
 		super("记个词先");	//窗口上的标题喵
 		
@@ -114,17 +122,12 @@ public class FrameWork extends JFrame{
 		buttonPanel.add(Box.createVerticalStrut(40)); 
 		buttonPanel.add(button3);/*按钮事件*/
 		buttonPanel.add(Box.createVerticalStrut(40)); 
-		buttonPanel.add(button4);/*按钮事件*/
+		buttonPanel.add(button4);button4.addActionListener(new Button4Clicked());
 		buttonPanel.add(Box.createVerticalStrut(40)); 
 		
 		
-		button4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 点击 Exit 按钮时退出程序
-                System.exit(0); // 退出程序
-            }
-        });
+		
+    
 		 
 		
 		//添加按钮面板并置于下方
