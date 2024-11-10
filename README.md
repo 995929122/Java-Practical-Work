@@ -69,3 +69,15 @@ WordIfo包等待完善（见11.8--2）
 考虑回头看看课本布局管理的部分找找思路
 -
 关于对主面板的修改 暂时的思路是保持背景不变 将不同的Card显示在背景上层 决得很有可能实现
+
+
+11.10更新：
+-
+添加了按钮事件
+在AI的帮助下推到了原先主面板的设计，理解了保持背景显示的方法（设置上层面板透明） 成功实现了平埔显示整个图片（利用getWidth和getHeight），稍微熟悉了一点cardlayout的用法
+：CardLayout 是一个LayoutManager 规定一次显示一个组件 内部的public void show(Container parent,String name)方法将parent中的不同组件（Container）show出来
+先将不同组件加到一个用CardLayout的Parent Panel中（用parent.add.(组件，"name")方法）之后就可以用show方法显示不同的Container 
+
+Label和Button的布局非常抽象 属于面向结果编程 不停调参之后面板差不多能看了 暂时不敢乱动  （也就是说布局管理自定义的能力不足）
+目前采用一个统一的创造次要面板的函数方法 不同面板完全同质 回头大概要拆分成不同的函数创建面板 但是感觉这么做会让Frame主类非常臃肿
+问了一嘴Ai ai的设计思路也是用不同的创建面板函数 使各自面板有不同组件  -----回头实装一下试试

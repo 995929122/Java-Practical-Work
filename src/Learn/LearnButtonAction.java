@@ -73,9 +73,6 @@ public class LearnButtonAction {
      // 回退按钮事件监听：返回到原面板
         backButton.addActionListener(new BackButtonClicked(cardLayout, panelContainer));
         
-
-		
-        
         // 将 CardLayout 容器添加到 JFrame
         frmFrame.add(panelContainer);
         
