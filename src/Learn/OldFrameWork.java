@@ -1,16 +1,22 @@
-package FrameWork;
+//本文件的留存是为了CardLayout的学习 由于CardLayout的使用不是很熟练，所以留存这个文件
+package Learn;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 // Label 类
+
 class Label extends JLabel {
-    public Label(String text) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5342081799098744668L;//去警告 但是无视Warning不是基本素养吗？
+	//以后再研究原理吧
+
+	public Label(String text) {
         super(text);
         this.setFont(new Font("Serif", Font.ITALIC, 66)); // 设置字体为Serif，大小66，粗体
         this.setForeground(Color.RED); // 设置文字颜色为红色
@@ -47,7 +53,7 @@ class ImagePanel extends JPanel {
     }
 }
 
-public class FrameWork extends JFrame {
+public class OldFrameWork extends JFrame {
 
     private Image image;
     private CardLayout cardLayout; // 定义CardLayout
@@ -58,7 +64,7 @@ public class FrameWork extends JFrame {
     Button button3 = new Button("Settings");
     Button button4 = new Button("Exit");
 
-    public FrameWork(String imagePath) {
+    public OldFrameWork(String imagePath) {
         super("记个词先");
 
         try {
@@ -162,6 +168,3 @@ public class FrameWork extends JFrame {
     }
 
 }
-
-
-

@@ -1,7 +1,7 @@
 package WordIfo;
-import java.lang.*;
+//import java.lang.*;
 
-import FrameWork.FrameWork;
+//import FrameWork.FrameWork;
 
 public class Word {
 	private StringBuffer English;
