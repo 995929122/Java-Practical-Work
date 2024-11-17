@@ -27,7 +27,8 @@ public class TCP_client extends JFrame implements ActionListener ,Runnable {
         this.setVisible(true);
         nickName = JOptionPane.showInputDialog("请输入昵称");
         try {
-            socket = new Socket("101.34.239.84", 9999);//连接虚拟机
+            //socket = new Socket("101.34.239.84", 9999);//连接云服务器
+        	socket = new Socket("127.0.0.1", 9999);
             JOptionPane.showMessageDialog(this, "连接成功");
             this.setTitle("客户端" + nickName);
             new Thread(this).start();
