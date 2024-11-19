@@ -71,7 +71,7 @@ public class StartFrame extends JFrame implements ActionListener {
             new MainFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
         }
         if (e.getSource() == Mode1) {
-            System.out.println("Mode1 按钮被点击！");
+           
             this.remove(ModeBox); // 移除 ModeBox 面板
             this.revalidate(); // 通知布局管理器重新布局
             this.repaint(); // 重新绘制窗口
@@ -86,7 +86,7 @@ public class StartFrame extends JFrame implements ActionListener {
             }
         }
         if (e.getSource() == Mode2) {
-            System.out.println("Mode2 按钮被点击！");
+            
             this.remove(ModeBox); 
             this.revalidate(); // 通知布局管理器重新布局
             this.repaint(); // 重新绘制窗口

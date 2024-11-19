@@ -4,11 +4,14 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class Mode1_Panel extends JPanel implements ActionListener {
     Socket socket = null;
@@ -16,22 +19,60 @@ public class Mode1_Panel extends JPanel implements ActionListener {
     JPanel panel = new JPanel();
     JLabel information = null;
     JButton submitButton = new JButton("submit");
-    StringBuffer part1 = new StringBuffer();
-    StringBuffer part2 = new StringBuffer();
+    JTextField firstTextField;
+    JTextField middleTextField;
+    JTextField lastTextField;
+    JPanel textFieldPanel;
+    StringBuffer part1;
+    StringBuffer part2;
+
     public Mode1_Panel() throws Exception {
         this.setOpaque(false);
-        
+        panel.setOpaque(false);
         fetchInformation();
 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // 设置垂直布局
-        information.setOpaque(false);
         information.setAlignmentX(CENTER_ALIGNMENT); // 设置 JLabel 在中轴线显示
-        information.setFont(new Font("Serif", Font.PLAIN, 40)); // 设置 JLabel 字体大小为 40px
+        information.setFont(new Font("Serif", Font.PLAIN, 70)); // 设置 JLabel 字体大小为 70px
         submitButton.setAlignmentX(CENTER_ALIGNMENT); // 设置 JButton 在中轴线显示
-        panel.add(information);
+        submitButton.setFont(new Font("Serif", Font.PLAIN, 40)); // 设置 JButton 字体大小为 40px
+        panel.add(Box.createVerticalStrut(90)); // 添加垂直间距
+        panel.add(information); // 显示单词解释
+        panel.add(Box.createVerticalStrut(200)); // 添加垂直间距
+
+        textFieldPanel = new JPanel();
+        textFieldPanel.setLayout(new BoxLayout(textFieldPanel, BoxLayout.X_AXIS));
+
+        firstTextField = new JTextField(1);
+        firstTextField.setFont(new Font("Serif", Font.PLAIN, 45)); // 设置字体大小为 30px
+        firstTextField.setEditable(false);
+        firstTextField.setOpaque(false);
+        firstTextField.setMaximumSize(firstTextField.getPreferredSize());
+        textFieldPanel.add(firstTextField);
+
+        middleTextField = new JTextField();
+        middleTextField.setFont(new Font("Serif", Font.PLAIN, 45)); // 设置字体大小为 30px
+        middleTextField.addActionListener(this); // 添加 ActionListener
+        textFieldPanel.add(middleTextField);
+
+        lastTextField = new JTextField(1);
+        lastTextField.setFont(new Font("Serif", Font.PLAIN, 45)); // 设置字体大小为 30px
+        lastTextField.setEditable(false);
+        lastTextField.setOpaque(false);
+        lastTextField.setMaximumSize(lastTextField.getPreferredSize());
+        textFieldPanel.add(lastTextField);
+
+        panel.add(textFieldPanel);
+        panel.add(Box.createVerticalStrut(200));
         panel.add(submitButton);
         submitButton.addActionListener(this);
         this.add(panel);
+
+        // 设置初始值
+        if (part1.length() > 0) {
+            firstTextField.setText(String.valueOf(part1.charAt(0)));
+            lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
+        }
     }
 
     private void fetchInformation() throws Exception {
@@ -43,41 +84,55 @@ public class Mode1_Panel extends JPanel implements ActionListener {
         while ((len = is.read(buffer)) != -1) {
             stringBuffer.append(new String(buffer, 0, len));
         }
-        //加工获取的数据
-        String[] parts = stringBuffer.toString().split(" ", 3);
+        String[] parts = stringBuffer.toString().split(" ");
         if (parts.length >= 3) {
             part1 = new StringBuffer(parts[1]);
             part2 = new StringBuffer(parts[2]);
-            // You can now use part1 and part2 as needed
+        } else {
+            part1 = new StringBuffer();
+            part2 = new StringBuffer();
+        }
         if (information == null) {
             information = new JLabel(part2.toString(), JLabel.CENTER);
         } else {
             information.setText(part2.toString());
         }
         socket.close();
-
-        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == submitButton) {
+        if (e.getSource() == submitButton || e.getSource() == middleTextField) {
+            //判断用户输入是否正确
+            if (middleTextField.getText().equals(part1.substring(1, part1.length() - 1))) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Correct!", "Result", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                //向服务器端回传信息
+                try {
+                    Socket sendSocket = new Socket("127.0.0.1", 23334);
+                    OutputStream os = sendSocket.getOutputStream();
+                    String message = part1.toString() + " " + part2.toString() + "\n";
+                    os.write(message.getBytes());
+                    os.flush();
+                    os.close();
+                    sendSocket.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                javax.swing.JOptionPane.showMessageDialog(this, "Wrong!", "Result", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
             try {
-                this.remove(panel);
-                this.revalidate();
-                this.repaint();
-
                 fetchInformation();
-
-                panel.removeAll();
-                panel.add(information);
-                panel.add(submitButton);
-                this.add(panel);
+                firstTextField.setText(String.valueOf(part1.charAt(0)));
+                middleTextField.setText(""); // 清空 middleTextField 等待用户输入
+                lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
                 this.revalidate();
                 this.repaint();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+
+
         }
     }
 }
