@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import FrameWork.StartFrame;
 
 public class Mode1_Panel extends JPanel implements ActionListener {
@@ -31,6 +30,9 @@ public class Mode1_Panel extends JPanel implements ActionListener {
     StringBuffer part1;
     StringBuffer part2;
     StartFrame parentFrame;
+    public javax.swing.Timer timer;
+    int timeRemaining;
+    JLabel timerLabel;
 
     public Mode1_Panel(StartFrame parentFrame) throws Exception {
         this.parentFrame = parentFrame;
@@ -70,7 +72,20 @@ public class Mode1_Panel extends JPanel implements ActionListener {
         textFieldPanel.add(lastTextField);
 
         panel.add(textFieldPanel);
-        panel.add(Box.createVerticalStrut(200));
+        panel.add(Box.createVerticalStrut(160));
+
+        // 创建一个新的 JPanel 作为计时器面板
+        JPanel timerPanel = new JPanel();
+        timerPanel.setOpaque(false); // 设置背景透明
+        timerPanel.setLayout(new BoxLayout(timerPanel, BoxLayout.Y_AXIS));
+        timerLabel = new JLabel("10", JLabel.CENTER);
+        timerLabel.setForeground(java.awt.Color.RED);
+        timerLabel.setFont(new Font("Serif", Font.PLAIN, 60));
+        timerLabel.setAlignmentX(CENTER_ALIGNMENT); // 设置 JLabel 在中轴线显示
+        timerPanel.add(timerLabel);
+        panel.add(timerPanel);
+        panel.add(Box.createVerticalStrut(30));
+
         panel.add(submitButton);
         submitButton.addActionListener(this);
         this.add(panel);
@@ -80,6 +95,58 @@ public class Mode1_Panel extends JPanel implements ActionListener {
             firstTextField.setText(String.valueOf(part1.charAt(0)));
             lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
         }
+
+        // 创建一个计时器
+
+        timer = new javax.swing.Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timeRemaining--;
+                timerLabel.setText(String.valueOf(timeRemaining));
+                if (timeRemaining <= 0) {
+                    ((javax.swing.Timer) e.getSource()).stop();
+                    // 向服务器端回传信息
+                    try {
+                        Socket sendSocket = new Socket("127.0.0.1", 23334);
+                        OutputStream os = sendSocket.getOutputStream();
+                        String message = part1.toString() + " " + part2.toString() + "\n";
+                        os.write(message.getBytes());
+                        os.flush();
+                        os.close();
+                        sendSocket.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    // 显示时间耗尽的提示
+                    int response = JOptionPane.showOptionDialog(Mode1_Panel.this, "Time's up!", "Warning",
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+                    if (response == JOptionPane.OK_OPTION) {
+                        // 重新获取信息并重绘面板
+                        try {
+                            fetchInformation();
+                            firstTextField.setText(String.valueOf(part1.charAt(0)));
+                            middleTextField.setText(""); // 清空 middleTextField 等待用户输入
+                            lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
+                            Mode1_Panel.this.revalidate();
+                            Mode1_Panel.this.repaint();
+                            // 重启计时器
+                            resetTimer();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        resetTimer();
+
+    }
+
+    private void resetTimer() {
+        timeRemaining = 10;
+        timerLabel.setText(String.valueOf(timeRemaining));
+        timer.start();
     }
 
     public String getInformationText() {
@@ -87,43 +154,49 @@ public class Mode1_Panel extends JPanel implements ActionListener {
     }
 
     private void fetchInformation() throws Exception {
-        socket = new Socket("127.0.0.1", 23333);
-        is = socket.getInputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        StringBuffer stringBuffer = new StringBuffer();
-        while ((len = is.read(buffer)) != -1) {
-            stringBuffer.append(new String(buffer, 0, len));
-        }
-        String receivedMessage = stringBuffer.toString().trim();
-        if (receivedMessage.equals("单词已经记完，请开始新一轮")) {
-            int response = JOptionPane.showOptionDialog(this, receivedMessage, "提示", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
-            if (response == JOptionPane.OK_OPTION) {
-                parentFrame.actionPerformed(new ActionEvent(parentFrame.getBackButton(), ActionEvent.ACTION_PERFORMED, null));
+        do {
+            socket = new Socket("127.0.0.1", 23333);
+            is = socket.getInputStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((len = is.read(buffer)) != -1) {
+                stringBuffer.append(new String(buffer, 0, len));
             }
-            part1 = new StringBuffer();
-            part2 = new StringBuffer();
-        } else {
-            String[] parts = receivedMessage.split(" ");
-            if (parts.length >= 3) {
-                part1 = new StringBuffer(parts[1]);
-                part2 = new StringBuffer(parts[2]);
-            } else {
+            String receivedMessage = stringBuffer.toString().trim();
+            if (receivedMessage.equals("单词已经记完，请开始新一轮")) {
+                int response = JOptionPane.showOptionDialog(this, receivedMessage, "提示", JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                if (response == JOptionPane.OK_OPTION) {
+                    parentFrame.actionPerformed(
+                            new ActionEvent(parentFrame.getBackButton(), ActionEvent.ACTION_PERFORMED, null));
+                }
                 part1 = new StringBuffer();
                 part2 = new StringBuffer();
-            }
-            if (information == null) {
-                information = new JLabel(part2.toString(), JLabel.CENTER);
             } else {
-                information.setText(part2.toString());
+                String[] parts = receivedMessage.split(" ");
+                if (parts.length >= 3) {
+                    part1 = new StringBuffer(parts[1]);
+                    part2 = new StringBuffer(parts[2]);
+                } else {
+                    part1 = new StringBuffer();
+                    part2 = new StringBuffer();
+                }
+                if (information == null) {
+                    information = new JLabel(part2.toString(), JLabel.CENTER);
+                } else {
+                    information.setText(part2.toString());
+                }
             }
-        }
-        socket.close();
+            socket.close();
+        } while (part1.length() <= 2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == submitButton || e.getSource() == middleTextField) {
+            // 停止计时器
+            timer.stop();
             // 判断用户输入是否正确
             if (middleTextField.getText().equals(part1.substring(1, part1.length() - 1))) {
                 JOptionPane.showMessageDialog(this, "Correct!", "Result", JOptionPane.INFORMATION_MESSAGE);
@@ -141,6 +214,7 @@ public class Mode1_Panel extends JPanel implements ActionListener {
                     ex.printStackTrace();
                 }
                 JOptionPane.showMessageDialog(this, "Wrong!", "Result", JOptionPane.INFORMATION_MESSAGE);
+                
             }
             try {
                 fetchInformation();
@@ -149,6 +223,8 @@ public class Mode1_Panel extends JPanel implements ActionListener {
                 lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
                 this.revalidate();
                 this.repaint();
+                // 重启计时器
+                resetTimer();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

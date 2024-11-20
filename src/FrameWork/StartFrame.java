@@ -12,6 +12,7 @@ import Modes.*;
 public class StartFrame extends JFrame implements ActionListener {
     private Image image;
     private Mode1_Panel mode1Panel;
+    private Mode2_Panel mode2Panel;
 
     public void FrameBackgroundInit(String imagePath) {
         try {
@@ -72,15 +73,17 @@ public class StartFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
             if (mode1Panel != null) {
+                mode1Panel.timer.stop();
                 try {
-                    // 回传信息到服务器并保存到 WrongWords.txt 中
+                    // 通知服务器删除 sentLines.txt 最后一行
                     Socket sendSocket = new Socket("127.0.0.1", 23334);
                     OutputStream os = sendSocket.getOutputStream();
-                    String message = mode1Panel.getInformationText() + "\n";
+                    String message = "DELETE_LAST_LINE\n";
                     os.write(message.getBytes());
                     os.flush();
                     os.close();
                     sendSocket.close();
+                    
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -106,7 +109,15 @@ public class StartFrame extends JFrame implements ActionListener {
             this.remove(ModeBox);
             this.revalidate(); // 通知布局管理器重新布局
             this.repaint(); // 重新绘制窗口
-            // 在这里添加 Mode1 按钮的逻辑
+            // 在这里添加 Mode2 按钮的逻辑
+            try {
+                mode2Panel = new Mode2_Panel(this);
+                this.add(mode2Panel);
+                this.revalidate(); // 通知布局管理器重新布局
+                this.repaint(); // 重新绘制窗口
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }

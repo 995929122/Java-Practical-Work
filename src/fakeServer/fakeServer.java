@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.io.InputStreamReader;
 
 public class fakeServer {
     private static final String SENT_LINES_FILE = "src/fakeServer/sentLines.txt";
@@ -34,14 +35,16 @@ public class fakeServer {
         }).start();
 
         // 启动发送数据的线程
-        while (true) {
+        new Thread(() -> {
+            while (true) {
             try {
                 Socket socket = serverSocket.accept();
                 new Thread(new DataSender(socket)).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+            }
+        }).start();
     }
 
     // 新增接收返回数据的部分
@@ -50,16 +53,50 @@ public class fakeServer {
         while (true) {
             Socket receiveSocket = receiveServerSocket.accept();
             InputStream is = receiveSocket.getInputStream();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(WRONG_WORDS_FILE, true));
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = is.read(buffer)) != -1) {
-                writer.write(new String(buffer, 0, len));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder messageBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                messageBuilder.append(line);
             }
-            writer.close();
+            String message = messageBuilder.toString().trim();
+            if (message.equals("DELETE_LAST_LINE")) {
+                deleteLastLine();
+            } else {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(WRONG_WORDS_FILE, true));
+                writer.write(message);
+                writer.newLine();
+                writer.close();
+            }
             is.close();
             receiveSocket.close();
         }
+    }
+
+    public static void deleteLastLine() throws IOException {
+        File file = new File(SENT_LINES_FILE);
+        if (!file.exists()) {
+            return;
+        }
+
+        List<String> lines = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        reader.close();
+
+        if (!lines.isEmpty()) {
+            lines.remove(lines.size() - 1);
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(SENT_LINES_FILE));
+        for (String l : lines) {
+            writer.write(l);
+            writer.newLine();
+        }
+        writer.close();
     }
 
     public static Set<String> loadSentLines() throws IOException {
