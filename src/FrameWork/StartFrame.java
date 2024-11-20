@@ -5,14 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import javax.imageio.ImageIO;
+import java.net.Socket;
 import javax.swing.*;
 import Modes.*;
 
 public class StartFrame extends JFrame implements ActionListener {
     private Image image;
+    private Mode1_Panel mode1Panel;
 
     public void FrameBackgroundInit(String imagePath) {
-
         try {
             image = ImageIO.read(new File(imagePath));
         } catch (IOException e) {
@@ -61,23 +62,39 @@ public class StartFrame extends JFrame implements ActionListener {
         backButton.addActionListener(this);
         buttonPanel.add(backButton, BorderLayout.SOUTH);
         this.add(buttonPanel, BorderLayout.SOUTH);
+    }
 
+    public JButton getBackButton() {
+        return backButton;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
+            if (mode1Panel != null) {
+                try {
+                    // 回传信息到服务器并保存到 WrongWords.txt 中
+                    Socket sendSocket = new Socket("127.0.0.1", 23334);
+                    OutputStream os = sendSocket.getOutputStream();
+                    String message = mode1Panel.getInformationText() + "\n";
+                    os.write(message.getBytes());
+                    os.flush();
+                    os.close();
+                    sendSocket.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
             this.dispose();
             new MainFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
         }
         if (e.getSource() == Mode1) {
-           
             this.remove(ModeBox); // 移除 ModeBox 面板
             this.revalidate(); // 通知布局管理器重新布局
             this.repaint(); // 重新绘制窗口
             // 在这里添加 Mode1 按钮的逻辑
             try {
-                Mode1_Panel mode1Panel = new Mode1_Panel();
+                mode1Panel = new Mode1_Panel(this);
                 this.add(mode1Panel);
                 this.revalidate(); // 通知布局管理器重新布局
                 this.repaint(); // 重新绘制窗口
@@ -86,12 +103,10 @@ public class StartFrame extends JFrame implements ActionListener {
             }
         }
         if (e.getSource() == Mode2) {
-            
-            this.remove(ModeBox); 
+            this.remove(ModeBox);
             this.revalidate(); // 通知布局管理器重新布局
             this.repaint(); // 重新绘制窗口
             // 在这里添加 Mode1 按钮的逻辑
         }
-
     }
 }
