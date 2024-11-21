@@ -7,12 +7,14 @@ import java.io.*;
 import javax.imageio.ImageIO;
 import java.net.Socket;
 import javax.swing.*;
+import ImagePath.imagePath;
 import Modes.*;
 
 public class StartFrame extends JFrame implements ActionListener {
     private Image image;
     private Mode1_Panel mode1Panel;
     private Mode2_Panel mode2Panel;
+    imagePath imagePath=new imagePath();
 
     public void FrameBackgroundInit(String imagePath) {
         try {
@@ -89,7 +91,7 @@ public class StartFrame extends JFrame implements ActionListener {
                 }
             }
             this.dispose();
-            new MainFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+            new MainFrame(imagePath.getImagePath());
         }
         if (e.getSource() == Mode1) {
             this.remove(ModeBox); // 移除 ModeBox 面板

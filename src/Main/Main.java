@@ -1,14 +1,17 @@
 package Main;
 import FrameWork.MainFrame;
-//import WordIfo.Word;
+import ImagePath.imagePath;
+
+
+
 
 public class Main {
 	
 	
 	public static void main(String[] args) {
 		
-		String imagePath = "D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png";
-		MainFrame frameWork=new MainFrame(imagePath);
+		imagePath imagePath=new imagePath();
+		MainFrame frameWork=new MainFrame(imagePath.getImagePath());
 		frameWork.setVisible(true);
 	}
 }

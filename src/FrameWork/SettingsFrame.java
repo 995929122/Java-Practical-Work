@@ -7,13 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-
+import ImagePath.*;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class SettingsFrame extends JFrame implements ActionListener {
 	private Image image;
+    imagePath imagePath=new imagePath();
     public void FrameBackgroundInit(String imagePath) {
   	
         try {
@@ -52,7 +53,7 @@ public class SettingsFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
             this.dispose();
-            new MainFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+            new MainFrame(imagePath.getImagePath());
         }
     }
 }

@@ -18,9 +18,9 @@ import java.util.Set;
 import java.io.InputStreamReader;
 
 public class fakeServer {
-    private static final String SENT_LINES_FILE = "src/fakeServer/sentLines.txt";
-    public static final String WRONG_WORDS_FILE = "src/fakeServer/WrongWords.txt";
-    public static final String TEXT_FILE = "D:\\Java_eclipse_workspace\\wordsTxT\\sorted.txt";
+    private static final String SENT_LINES_FILE = "Practical_Work\\src\\fakeServer\\sentLines.txt";
+    public static final String WRONG_WORDS_FILE = "Practical_Work\\src\\fakeServer\\WrongWords.txt";
+    public static final String TEXT_FILE = "Practical_Work\\src\\fakeServer\\sorted.txt";
 
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(23333);

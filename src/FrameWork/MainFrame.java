@@ -1,6 +1,9 @@
 package FrameWork;
 
 import javax.swing.*;
+
+import ImagePath.imagePath;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,7 +58,7 @@ class ImagePanel extends JPanel {
 public class MainFrame extends JFrame implements ActionListener {
 
     private Image image;
-
+    imagePath imagePath=new imagePath();
     Button button1 = new Button("Start");
     Button button2 = new Button("Wrong Words");
     Button button3 = new Button("Settings");
@@ -111,15 +114,15 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
     	if (e.getSource()==button1) {
-    		new StartFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+    		new StartFrame(imagePath.getImagePath());
     		this.dispose();
     	}
     	if (e.getSource()==button2) {
-    		new WrongFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+    		new WrongFrame(imagePath.getImagePath());
     		this.dispose();
     	}
     	if (e.getSource()==button3) {
-    		new SettingsFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+    		new SettingsFrame(imagePath.getImagePath());
     		this.dispose();
     	}
     	if (e.getSource()==button4) {
