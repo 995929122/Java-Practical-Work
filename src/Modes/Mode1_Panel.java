@@ -97,7 +97,6 @@ public class Mode1_Panel extends JPanel implements ActionListener {
         }
 
         // 创建一个计时器
-
         timer = new javax.swing.Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

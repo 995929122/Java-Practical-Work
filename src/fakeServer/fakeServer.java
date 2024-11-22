@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -15,16 +17,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
 import java.io.InputStreamReader;
 
 public class fakeServer {
     private static final String SENT_LINES_FILE = "Practical_Work\\src\\fakeServer\\sentLines.txt";
     public static final String WRONG_WORDS_FILE = "Practical_Work\\src\\fakeServer\\WrongWords.txt";
     public static final String TEXT_FILE = "Practical_Work\\src\\fakeServer\\sorted.txt";
+    private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(23333);
-
+        serverSocket = new ServerSocket(23333);
         // 启动接收数据的线程
         new Thread(() -> {
             try {
@@ -35,16 +38,55 @@ public class fakeServer {
         }).start();
 
         // 启动发送数据的线程
+
         new Thread(() -> {
             while (true) {
-            try {
-                Socket socket = serverSocket.accept();
-                new Thread(new DataSender(socket)).start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                try {
+                    Socket socket = serverSocket.accept();
+                    new Thread(new DataSender(socket)).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
+
+        // 启动发送错误单词的线程
+        new Thread(() -> {
+            try {
+                sendWrongWords();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public static void sendWrongWords() throws Exception {
+        ServerSocket serverSocket = new ServerSocket(23335);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            BufferedReader reader = new BufferedReader(new FileReader(TEXT_FILE));
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(" ", 3);
+            if (parts.length == 3) {
+                lines.add(parts[2]);
+            }
+            }
+            reader.close();
+
+            if (!lines.isEmpty()) {
+            Random rand = new Random();
+            String randomLine = lines.get(rand.nextInt(lines.size()));
+            OutputStream os = socket.getOutputStream();
+            os.write(randomLine.getBytes());
+            os.flush();
+            os.close();
+            }
+            
+            socket.close();
+        }
+
     }
 
     // 新增接收返回数据的部分
@@ -128,6 +170,7 @@ public class fakeServer {
 }
 
 class DataSender implements Runnable {
+
     private Socket socket;
 
     public DataSender(Socket socket) {
@@ -138,6 +181,7 @@ class DataSender implements Runnable {
     public void run() {
         OutputStream os = null;
         try {
+
             // 加载已发送的行
             Set<String> sentLines = fakeServer.loadSentLines();
 
@@ -197,4 +241,5 @@ class DataSender implements Runnable {
             e.printStackTrace();
         }
     }
+
 }

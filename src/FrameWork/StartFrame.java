@@ -90,6 +90,21 @@ public class StartFrame extends JFrame implements ActionListener {
                     ex.printStackTrace();
                 }
             }
+            if(mode2Panel!=null){
+                try {
+                    // 通知服务器删除 sentLines.txt 最后一行
+                    Socket sendSocket = new Socket("127.0.0.1", 23334);
+                    OutputStream os = sendSocket.getOutputStream();
+                    String message = "DELETE_LAST_LINE\n";
+                    os.write(message.getBytes());
+                    os.flush();
+                    os.close();
+                    sendSocket.close();
+                    
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
             this.dispose();
             new MainFrame(imagePath.getImagePath());
         }
