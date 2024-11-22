@@ -15,7 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import FrameWork.MainFrame;
 import FrameWork.StartFrame;
+import ImagePath.imagePath;
 
 public class Mode1_Panel extends JPanel implements ActionListener {
     Socket socket = null;
@@ -33,6 +36,8 @@ public class Mode1_Panel extends JPanel implements ActionListener {
     public javax.swing.Timer timer;
     int timeRemaining;
     JLabel timerLabel;
+    int MARK = 0;
+    imagePath imagePath = new imagePath();
 
     public Mode1_Panel(StartFrame parentFrame) throws Exception {
         this.parentFrame = parentFrame;
@@ -108,7 +113,7 @@ public class Mode1_Panel extends JPanel implements ActionListener {
                     try {
                         Socket sendSocket = new Socket("127.0.0.1", 23334);
                         OutputStream os = sendSocket.getOutputStream();
-                        String message = part1.toString() + " " + part2.toString() + "\n";
+                        String message = part1.toString() + " " + part2.toString() + "  未回答" + "\n";
                         os.write(message.getBytes());
                         os.flush();
                         os.close();
@@ -116,23 +121,27 @@ public class Mode1_Panel extends JPanel implements ActionListener {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
+                    MARK--;
                     // 显示时间耗尽的提示
-                    int response = JOptionPane.showOptionDialog(Mode1_Panel.this, "Time's up!", "Warning",
+                    int response = JOptionPane.showOptionDialog(Mode1_Panel.this, "您没有回答，答案是" + part1.toString(),
+                            "Warning",
                             JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
                     if (response == JOptionPane.OK_OPTION) {
+
                         // 重新获取信息并重绘面板
-                        try {
-                            fetchInformation();
-                            firstTextField.setText(String.valueOf(part1.charAt(0)));
-                            middleTextField.setText(""); // 清空 middleTextField 等待用户输入
-                            lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
-                            Mode1_Panel.this.revalidate();
-                            Mode1_Panel.this.repaint();
-                            // 重启计时器
-                            resetTimer();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        if (checkMARK()) {
+                            try {
+                                fetchInformation();
+                                firstTextField.setText(String.valueOf(part1.charAt(0)));
+                                middleTextField.setText(""); // 清空 middleTextField 等待用户输入
+                                lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
+                                Mode1_Panel.this.revalidate();
+                                Mode1_Panel.this.repaint();
+                                // 重启计时器
+                                resetTimer();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -148,9 +157,32 @@ public class Mode1_Panel extends JPanel implements ActionListener {
         timer.start();
     }
 
-    public String getInformationText() {
-        return part1.toString() + " " + part2.toString();
+    public boolean checkMARK() {
+        if (MARK <= 0) {
+            timer.stop();
+            try {
+                // 通知服务器删除 sentLines.txt 最后一行
+                Socket sendSocket = new Socket("127.0.0.1", 23334);
+                OutputStream os = sendSocket.getOutputStream();
+                String message = "DELETE_LAST_LINE\n";
+                os.write(message.getBytes());
+                os.flush();
+                os.close();
+                sendSocket.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(Mode1_Panel.this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
+            parentFrame.dispose();
+            new MainFrame(imagePath.getImagePath());
+            return false;
+        }
+        return true;
     }
+
+    // public String getInformationText() {
+    // return part1.toString() + " " + part2.toString();
+    // }
 
     private void fetchInformation() throws Exception {
         do {
@@ -198,11 +230,11 @@ public class Mode1_Panel extends JPanel implements ActionListener {
             timer.stop();
             // 判断用户输入是否正确
             if (middleTextField.getText().equals(part1.substring(1, part1.length() - 1))) {
-                JOptionPane.showMessageDialog(this, "Correct!", "Result", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // 向服务器端回传信息
+                MARK++;
+                JOptionPane.showMessageDialog(this, "恭喜回答正确", "Result", JOptionPane.INFORMATION_MESSAGE);
                 try {
-                    Socket sendSocket = new Socket("127.0.0.1", 23334);
+                    // 传输正确的单词
+                    Socket sendSocket = new Socket("127.0.0.1", 23336);
                     OutputStream os = sendSocket.getOutputStream();
                     String message = part1.toString() + " " + part2.toString() + "\n";
                     os.write(message.getBytes());
@@ -210,22 +242,39 @@ public class Mode1_Panel extends JPanel implements ActionListener {
                     os.close();
                     sendSocket.close();
                 } catch (Exception ex) {
+
+                }
+            } else {
+                MARK -= 2;
+                // 向服务器端回传信息
+                try {
+                    Socket sendSocket = new Socket("127.0.0.1", 23334);
+                    OutputStream os = sendSocket.getOutputStream();
+                    String message = part1.toString() + " " + part2.toString() + "  回答错误" + "\n";
+                    os.write(message.getBytes());
+                    os.flush();
+                    os.close();
+                    sendSocket.close();
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                JOptionPane.showMessageDialog(this, "Wrong!", "Result", JOptionPane.INFORMATION_MESSAGE);
-                
+                JOptionPane.showMessageDialog(this, "回答错误，答案是" + part1.toString(), "Result",
+                        JOptionPane.INFORMATION_MESSAGE);
+
             }
-            try {
-                fetchInformation();
-                firstTextField.setText(String.valueOf(part1.charAt(0)));
-                middleTextField.setText(""); // 清空 middleTextField 等待用户输入
-                lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
-                this.revalidate();
-                this.repaint();
-                // 重启计时器
-                resetTimer();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            if (checkMARK()) {
+                try {
+                    fetchInformation();
+                    firstTextField.setText(String.valueOf(part1.charAt(0)));
+                    middleTextField.setText(""); // 清空 middleTextField 等待用户输入
+                    lastTextField.setText(String.valueOf(part1.charAt(part1.length() - 1)));
+                    this.revalidate();
+                    this.repaint();
+                    // 重启计时器
+                    resetTimer();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }

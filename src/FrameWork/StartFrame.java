@@ -91,6 +91,7 @@ public class StartFrame extends JFrame implements ActionListener {
                 }
             }
             if(mode2Panel!=null){
+                mode2Panel.timer.stop();
                 try {
                     // 通知服务器删除 sentLines.txt 最后一行
                     Socket sendSocket = new Socket("127.0.0.1", 23334);

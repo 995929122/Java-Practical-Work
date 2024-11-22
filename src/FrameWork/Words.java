@@ -12,8 +12,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class WrongFrame extends JFrame implements ActionListener {
+import ImagePath.imagePath;
+
+public class Words extends JFrame implements ActionListener {
 	private Image image;
+    imagePath imagePath=new imagePath();
     public void FrameBackgroundInit(String imagePath) {
   	
         try {
@@ -32,7 +35,7 @@ public class WrongFrame extends JFrame implements ActionListener {
 	
     Label label = new Label("Welcome to Wrong Words ");
     Button backButton=new Button("Back");
-    public WrongFrame(String imagePath) {
+    public Words(String imagePath) {
 		super("记个词先");
 		FrameBackgroundInit(imagePath);
 		this.setLayout(new BorderLayout());
@@ -52,7 +55,7 @@ public class WrongFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
             this.dispose();
-            new MainFrame("D:\\Java_eclipse_workspace\\Practical_Work\\src\\FrameWork\\image.png");
+            new MainFrame(imagePath.getImagePath());
         }
     }
 }

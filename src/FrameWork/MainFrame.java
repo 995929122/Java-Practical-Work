@@ -118,7 +118,7 @@ public class MainFrame extends JFrame implements ActionListener {
     		this.dispose();
     	}
     	if (e.getSource()==button2) {
-    		new WrongFrame(imagePath.getImagePath());
+    		new Words(imagePath.getImagePath());
     		this.dispose();
     	}
     	if (e.getSource()==button3) {

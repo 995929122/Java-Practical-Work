@@ -23,12 +23,14 @@ import java.io.InputStreamReader;
 public class fakeServer {
     private static final String SENT_LINES_FILE = "Practical_Work\\src\\fakeServer\\sentLines.txt";
     public static final String WRONG_WORDS_FILE = "Practical_Work\\src\\fakeServer\\WrongWords.txt";
+    public static final String MASTER_WORDS = "Practical_Work\\src\\fakeServer\\mastered.txt";
     public static final String TEXT_FILE = "Practical_Work\\src\\fakeServer\\sorted.txt";
     private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws Exception {
         serverSocket = new ServerSocket(23333);
-        // 启动接收数据的线程
+        
+        // 启动接收错误单词数据的线程
         new Thread(() -> {
             try {
                 receiveWrongWords();
@@ -37,8 +39,7 @@ public class fakeServer {
             }
         }).start();
 
-        // 启动发送数据的线程
-
+        // 启动发送正确单词数据的线程
         new Thread(() -> {
             while (true) {
                 try {
@@ -54,6 +55,15 @@ public class fakeServer {
         new Thread(() -> {
             try {
                 sendWrongWords();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        //启动接收正确单词的线程
+        new Thread(() -> {
+            try {
+                reveiveMasterWords();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -110,6 +120,27 @@ public class fakeServer {
                 writer.newLine();
                 writer.close();
             }
+            is.close();
+            receiveSocket.close();
+        }
+    }
+
+    public static void reveiveMasterWords() throws Exception {
+        ServerSocket receiveServerSocket = new ServerSocket(23336);
+        while (true) {
+            Socket receiveSocket = receiveServerSocket.accept();
+            InputStream is = receiveSocket.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder messageBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                messageBuilder.append(line);
+            }
+            String message = messageBuilder.toString().trim();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(MASTER_WORDS, true));
+            writer.write(message);
+            writer.newLine();
+            writer.close();
             is.close();
             receiveSocket.close();
         }
