@@ -39,6 +39,7 @@ public class Mode2_Panel extends JPanel implements ActionListener {
     public javax.swing.Timer timer;
     int MARK = 0;
     imagePath imagePath = new imagePath();
+    JLabel markLabel = null;
 
     // Mode2_Panel() 构造方法用于初始化 Mode2_Panel
     public Mode2_Panel(StartFrame parentFrame) throws Exception {
@@ -51,9 +52,9 @@ public class Mode2_Panel extends JPanel implements ActionListener {
         information.setAlignmentX(CENTER_ALIGNMENT);
         information.setFont(new Font("Serif", Font.BOLD, 70));
         panel.setOpaque(false);
-        panel.add(Box.createVerticalStrut(160));
+        panel.add(Box.createVerticalStrut(150));
         panel.add(information);
-        panel.add(Box.createVerticalStrut(100));
+        panel.add(Box.createVerticalStrut(80));
 
         // 创建一个新的 JPanel 作为计时器面板
         JPanel timerPanel = new JPanel();
@@ -116,6 +117,8 @@ public class Mode2_Panel extends JPanel implements ActionListener {
                                 }
                                 buttonPanel.revalidate();
                                 buttonPanel.repaint();
+                                markLabel.setText("当前分数 " + MARK);
+                                markLabel.revalidate();
                                 // 重启计时器
                                 resetTimer();
                             } catch (Exception ex) {
@@ -153,6 +156,12 @@ public class Mode2_Panel extends JPanel implements ActionListener {
         panel.add(Box.createVerticalStrut(50));
         panel.add(confirmButton);
         confirmButton.addActionListener(this);
+
+        // 分数显示
+        markLabel = new JLabel("当前分数 " + MARK, JLabel.CENTER);
+        markLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+        markLabel.setAlignmentX(CENTER_ALIGNMENT); // 设置 JLabel 在中轴线显示
+        panel.add(markLabel);
 
         this.add(panel);
     }
@@ -310,6 +319,8 @@ public class Mode2_Panel extends JPanel implements ActionListener {
                 }
                 buttonPanel.revalidate();
                 buttonPanel.repaint();
+                markLabel.setText("当前分数 " + MARK);
+                markLabel.revalidate();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

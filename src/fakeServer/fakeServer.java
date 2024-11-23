@@ -9,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -21,10 +19,10 @@ import java.util.Set;
 import java.io.InputStreamReader;
 
 public class fakeServer {
-    private static final String SENT_LINES_FILE = "Practical_Work\\src\\fakeServer\\sentLines.txt";
-    public static final String WRONG_WORDS_FILE = "Practical_Work\\src\\fakeServer\\WrongWords.txt";
-    public static final String MASTER_WORDS = "Practical_Work\\src\\fakeServer\\mastered.txt";
-    public static final String TEXT_FILE = "Practical_Work\\src\\fakeServer\\sorted.txt";
+    private static final String SENT_LINES_FILE = "src\\fakeServer\\sentLines.txt";
+    public static final String WRONG_WORDS_FILE = "src\\fakeServer\\WrongWords.txt";
+    public static final String MASTER_WORDS = "src\\fakeServer\\mastered.txt";
+    public static final String TEXT_FILE = "src\\fakeServer\\sorted.txt";
     private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws Exception {
