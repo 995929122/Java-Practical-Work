@@ -3,6 +3,7 @@ package fakeServer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
 import java.io.InputStreamReader;
 
 public class fakeServer {
@@ -29,7 +29,7 @@ public class fakeServer {
 
     public static void main(String[] args) throws Exception {
         serverSocket = new ServerSocket(23333);
-        
+
         // 启动接收错误单词数据的线程
         new Thread(() -> {
             try {
@@ -60,7 +60,7 @@ public class fakeServer {
             }
         }).start();
 
-        //启动接收正确单词的线程
+        // 启动接收正确单词的线程
         new Thread(() -> {
             try {
                 reveiveMasterWords();
@@ -68,6 +68,60 @@ public class fakeServer {
                 e.printStackTrace();
             }
         }).start();
+
+        // 启动发送已掌握或未掌握单词的线程
+        new Thread(() -> {
+            try {
+                sendMastered();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+        
+        new Thread(() -> {
+            try {
+                sendunMastered();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public static void sendMastered() throws Exception {
+        ServerSocket serverSocket = new ServerSocket(23337);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            File file = new File(MASTER_WORDS);
+            try (FileInputStream fis = new FileInputStream(file);
+                    OutputStream os = socket.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void sendunMastered() throws Exception {
+        ServerSocket serverSocket = new ServerSocket(23338);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            File file = new File(WRONG_WORDS_FILE);
+            try (FileInputStream fis = new FileInputStream(file);
+                    OutputStream os = socket.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void sendWrongWords() throws Exception {
@@ -78,22 +132,22 @@ public class fakeServer {
             List<String> lines = new ArrayList<>();
             String line;
             while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(" ", 3);
-            if (parts.length == 3) {
-                lines.add(parts[2]);
-            }
+                String[] parts = line.split(" ", 3);
+                if (parts.length == 3) {
+                    lines.add(parts[2]);
+                }
             }
             reader.close();
 
             if (!lines.isEmpty()) {
-            Random rand = new Random();
-            String randomLine = lines.get(rand.nextInt(lines.size()));
-            OutputStream os = socket.getOutputStream();
-            os.write(randomLine.getBytes());
-            os.flush();
-            os.close();
+                Random rand = new Random();
+                String randomLine = lines.get(rand.nextInt(lines.size()));
+                OutputStream os = socket.getOutputStream();
+                os.write(randomLine.getBytes());
+                os.flush();
+                os.close();
             }
-            
+
             socket.close();
         }
 

@@ -25,7 +25,7 @@ class Label extends JLabel {
 class Button extends JButton {
     public Button(String TextOnButton) {
         super(TextOnButton);
-        setPreferredSize(new Dimension(300, 60)); // 设置按钮的固定大小
+        setPreferredSize(new Dimension(200, 65)); // 设置按钮的固定大小
         setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 44)); // 设置按钮的字体
         setBackground(new Color(0, 0, 0, 0)); // 设置背景颜色为透明
         setForeground(Color.BLACK); // 设置按钮文字颜色
@@ -60,7 +60,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private Image image;
     imagePath imagePath=new imagePath();
     Button button1 = new Button("Start");
-    Button button2 = new Button("Wrong Words");
+    Button button2 = new Button("Words");
     Button button3 = new Button("Settings");
     Button button4 = new Button("Exit");
 
@@ -107,7 +107,7 @@ public class MainFrame extends JFrame implements ActionListener {
         buttonPanel.add(button3);button3.addActionListener(this);
         buttonPanel.add(Box.createRigidArea(new Dimension(20,45 )));
         buttonPanel.add(button4);button4.addActionListener(this);
-        buttonPanel.add(Box.createRigidArea(new Dimension(30,45 )));
+        buttonPanel.add(Box.createRigidArea(new Dimension(20,45 )));
         this.add(buttonPanel, BorderLayout.SOUTH);
 
     }
