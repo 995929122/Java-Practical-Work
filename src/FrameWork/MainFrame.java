@@ -64,7 +64,7 @@ public class MainFrame extends JFrame implements ActionListener {
     Button button3 = new Button("Settings");
     Button button4 = new Button("Exit");
 
-    Label jlb = new Label("   The name of whole project");
+    Label jlb = new Label("   你这个年龄段，不记单词睡得着觉？");
     
     public void FrameBackgroundInit(String imagePath) {
     	

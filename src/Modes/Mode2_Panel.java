@@ -251,6 +251,7 @@ public class Mode2_Panel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        timer.stop();
         AbstractButton button = null;
         for (AbstractButton b : Collections.list(buttonGroup.getElements())) {
             if (b.isSelected()) {

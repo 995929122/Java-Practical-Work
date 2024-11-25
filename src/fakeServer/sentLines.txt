@@ -6,3 +6,13 @@
 3592 platform n.平台,台;站台,月台;政纲,党纲
 4053 request v./n.请求,要求
 53 acknowledge vt.承认;接受;告知(信件等的)收到;答谢
+3265 occasion n.场合,时节,时刻;时机,机会
+3849 quality n.质量,品质,特性
+4187 sad a.悲哀的,忧愁的
+3135 narrative a.叙述性的 n.叙述
+800 Christmas n.圣诞节
+1370 dot n.点,圆点 v.在…上打点
+1610 everyday adj.每日的，日常的
+5171 unlikely a.未必的,靠不住的
+159 along ad.向前;和...一起，一同 prep.沿着，顺着
+3246 oath n.誓言,誓约,诅咒
