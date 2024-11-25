@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Font;
 import java.util.Collections;
-
 import FrameWork.MainFrame;
 import FrameWork.StartFrame;
 import ImagePath.imagePath;
@@ -37,7 +36,7 @@ public class Mode2_Panel extends JPanel implements ActionListener {
     JLabel timerLabel;
     int timeRemaining;
     public javax.swing.Timer timer;
-    int MARK = 0;
+    int MARK = 10;
     imagePath imagePath = new imagePath();
     JLabel markLabel = null;
 

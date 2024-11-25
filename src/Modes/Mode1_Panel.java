@@ -33,7 +33,7 @@ public class Mode1_Panel extends JPanel implements ActionListener {
     public javax.swing.Timer timer;
     int timeRemaining;
     JLabel timerLabel;
-    int MARK = 0;
+    int MARK = 10;
     JLabel markLabel=null;
     imagePath imagePath = new imagePath();
 
