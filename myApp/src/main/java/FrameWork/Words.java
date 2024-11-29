@@ -86,7 +86,7 @@ public class Words extends JFrame implements ActionListener {
         if (e.getSource() == Mastered) {
             try {
                 Socket socket = new Socket("127.0.0.1", 23337);
-                File file = new File("src/words/已掌握单词.txt");
+                File file = new File("src/main/java/words/已掌握单词.txt");
                 FileOutputStream fos = new FileOutputStream(file);
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -96,7 +96,7 @@ public class Words extends JFrame implements ActionListener {
                 fos.close();
                 socket.close();
                 try {
-                    Desktop.getDesktop().open(new File("src/words/已掌握单词.txt"));
+                    Desktop.getDesktop().open(new File("src/main/java/words/已掌握单词.txt"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -109,7 +109,7 @@ public class Words extends JFrame implements ActionListener {
             try {
                 System.out.println("unMastered");
                 Socket socket = new Socket("127.0.0.1", 23338);
-                File file = new File("src/words/未掌握单词.txt");
+                File file = new File("src/main/java/words/未掌握单词.txt");
                 FileOutputStream fos = new FileOutputStream(file);
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -119,7 +119,7 @@ public class Words extends JFrame implements ActionListener {
                 fos.close();
                 socket.close();
                 try {
-                    Desktop.getDesktop().open(new File("src/words/未掌握单词.txt"));
+                    Desktop.getDesktop().open(new File("src/main/java/words/未掌握单词.txt"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
